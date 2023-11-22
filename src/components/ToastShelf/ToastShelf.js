@@ -2,18 +2,37 @@ import React from 'react';
 
 import Toast from '../Toast';
 import styles from './ToastShelf.module.css';
+import {ToastContext} from "../ToastProvider";
+import {useKey} from "../../hooks/useKey";
 
 function ToastShelf() {
-  return (
-    <ol className={styles.wrapper}>
-      <li className={styles.toastWrapper}>
-        <Toast variant="notice">Example notice toast</Toast>
-      </li>
-      <li className={styles.toastWrapper}>
-        <Toast variant="error">Example error toast</Toast>
-      </li>
-    </ol>
-  );
+    const {toasts,setToasts} = React.useContext(ToastContext);
+
+    const onToastRemoveClicked = () => {
+        setToasts((p) => {
+            return [...p.filter((toast) => toast !== toastRemoved)];
+        })
+    }
+
+    useKey('Escape', () => {
+        setToasts([]);
+    })
+
+    return (
+        <ol className={styles.wrapper} role={'region'} aria-live={'polite'} aria-label={'Notification'}>
+            {toasts.map((toast) => {
+                const {variant, content} = toast;
+                const id = crypto.randomUUID();
+
+                return (
+                    <li className={styles.toastWrapper} key={id}>
+                        <Toast variant={variant} onClose={() => onToastRemoveClicked(toast)}>{content}</Toast>
+                    </li>
+
+                )
+            })}
+        </ol>
+    );
 }
 
 export default ToastShelf;

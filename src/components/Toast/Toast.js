@@ -18,18 +18,22 @@ const ICONS_BY_VARIANT = {
   error: AlertOctagon,
 };
 
-function Toast() {
+function Toast({variant, children, onClose}) {
+    if(!Object.keys(ICONS_BY_VARIANT).includes(variant)) {
+        throw new Error(`unsupported variant: <${variant}>, expected one of: <${Object.keys(ICONS_BY_VARIANT)}>`)
+    }
+
   return (
-    <div className={`${styles.toast} ${styles.notice}`}>
+    <div className={`${styles.toast} ${styles[variant]}`}>
       <div className={styles.iconContainer}>
         <Info size={24} />
       </div>
       <p className={styles.content}>
-        16 photos have been uploaded
+          <VisuallyHidden>{variant}{' '}-</VisuallyHidden>
+          {children}
       </p>
-      <button className={styles.closeButton}>
+      <button className={styles.closeButton} aria-label={'Dismiss message'} aria-live={'off'} onClick={onClose}>
         <X size={24} />
-        <VisuallyHidden>Dismiss message</VisuallyHidden>
       </button>
     </div>
   );
